@@ -1,0 +1,92 @@
+-- the crime was a ​murder​ that occurred sometime on ​Jan.15, 2018​ 
+-- and that it took place in ​SQL City​
+
+--SELECT * FROM crime_scene_report
+--WHERE 
+--	type = 'murder' and
+--	city = 'SQL City' and
+--	date = 20180115
+	
+-- Security footage shows that there were 2 witnesses. 
+-- The first witness lives at the last house on "Northwestern Dr". 
+-- The second witness, named Annabel, lives somewhere on "Franklin Ave".
+              
+--SELECT * FROM person as p
+--WHERE address_street_name = "Franklin Ave" 
+--AND name LIKE "%Annabel%"
+
+-- P.ID 14887 Morty Schapiro	LicID:118009 | 4919 Northwestern Dr	SSN:111564949
+  -- Man, memb# starts with "48Z",  gold member. Car with plate %H42W%
+-- P.ID 16371 Annabel Miller LicID:490173 | 103 Franklin Ave	SSN:318771143
+  -- Killer was working out last week on Jan 9 at same time as Annabel
+  -- Member_id =90081	
+
+/*SELECT p.*, member.id as member_id, dl.plate_number
+FROM person AS p
+INNER JOIN get_fit_now_member AS member
+	ON member.person_id = p.id
+INNER JOIN drivers_license as dl
+	ON p.license_id = dl.id
+WHERE p.id = 16371*/
+
+--49550	Tomas Baisley	309485	2050 Lamplight St		  851169893	48Z38	7REGF3
+--67318	Jeremy Bowers	423327	530	Washington Pl, Apt 3A 871539279	48Z55	0H42W2
+
+/*SELECT * FROM get_fit_now_check_in
+WHERE membership_id = 90081	
+OR membership_id like "48Z%"
+AND check_in_date = 20180109*/
+
+-- Working out at same time as Annabel with member_id like 48Z% 48Z7A & 48Z55
+
+/*SELECT p.*, member.id as member_id, dl.plate_number
+FROM person AS p
+INNER JOIN get_fit_now_member AS member
+	ON member.person_id = p.id
+INNER JOIN drivers_license as dl
+	ON p.license_id = dl.id
+WHERE member_id = '48Z7A' 
+OR member_id = '48Z55'*/
+
+--67318	Jeremy Bowers AGAIN! Must be him
+-- CORRECT!
+
+-- FINDING THE MASTERMIND
+
+-- Step 1:
+--SELECT * FROM interview
+--WHERE person_id = 67318
+
+--I was hired by a woman with a lot of money. 
+--I don't know her name but I know she's around 5'5" (65") or 5'7" (67"). 
+--She has red hair and she drives a Tesla Model S. 
+--I know that she attended the SQL Symphony Concert 3 times in December 2017
+
+-- Step 2:
+SELECT p.name, dl.id as dl_id, fb.*
+FROM person as p
+INNER JOIN drivers_license as dl
+	ON p.license_id = dl.id
+INNER JOIN facebook_event_checkin as fb
+	on p.id = fb.person_id
+WHERE dl.hair_color = 'red'
+AND dl.gender = 'female'
+AND dl.car_make = 'Tesla'
+AND fb.date like '201712%'
+AND dl.height BETWEEN 65 AND 67
+
+-- Result: 
+/*
+name				dl_id	person_id	event_id	event_name			date
+Miranda Priestly	202298	99716		1143	SQL Symphony Concert	20171206
+Miranda Priestly	202298	99716		1143	SQL Symphony Concert	20171212
+Miranda Priestly	202298	99716		1143	SQL Symphony Concert	20171229
+*/
+
+-- CHECK > Result:
+/*
+"Congrats, you found the brains behind the murder! 
+Everyone in SQL City hails you as the greatest SQL detective of all time. 
+Time to break out the champagne!"
+*/
+              
